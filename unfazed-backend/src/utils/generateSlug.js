@@ -1,0 +1,1 @@
+const {Therapist}=require('../models');const base=s=>(s||'therapist').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'therapist';async function generateUniqueSlug(name){const b=base(name);let s=b,n=2;while(await Therapist.exists({slug:s}))s=`${b}-${n++}`;return s}module.exports={generateUniqueSlug};

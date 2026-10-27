@@ -1,0 +1,4 @@
+const {Therapist,SubscriptionTierConfig,Client}=require('../models');
+// Single source of truth: route handlers must call canAccess, never compare tier strings.
+async function canAccess(therapistId,featureKey,context={}){const t=await Therapist.findById(therapistId).lean();if(!t)return {allowed:false,reason:'therapist_not_found'};const tier=await SubscriptionTierConfig.findOne({key:t.tier_key,active:true}).lean();if(!tier)return {allowed:false,reason:'tier_not_configured'};if(featureKey==='activeClientCap'){const current=await Client.countDocuments({therapist_id:therapistId,status:'Active'});const cap=tier.caps?.activeClients??0;return {allowed:current<cap,reason:current>=cap?'active_client_cap_reached':null,current,cap,tier:tier.name};}const flag=tier.featureFlags?.[featureKey];const allowed=Array.isArray(flag)?flag.includes(context.value):flag===true;return {allowed,reason:allowed?null:'feature_not_in_plan',tier:tier.name};}
+module.exports={canAccess};

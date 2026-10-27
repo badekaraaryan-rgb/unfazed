@@ -1,0 +1,1 @@
+const {Therapist}=require('../models');async function assignLead(lead){if(lead.therapist_id)return lead;const t=await Therapist.findOne({}).sort({createdAt:1});if(!t)throw new Error('No therapist available');lead.therapist_id=t._id;return lead}module.exports={assignLead};

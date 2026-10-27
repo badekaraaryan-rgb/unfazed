@@ -1,0 +1,1 @@
+const jwt=require('jsonwebtoken');module.exports=function auth(req,res,next){const token=(req.headers.authorization||'').replace(/^Bearer\s+/,'');if(!token)return res.status(401).json({error:'Authentication required'});try{req.therapistId=jwt.verify(token,process.env.JWT_SECRET).therapistId;next()}catch(e){res.status(401).json({error:'Invalid or expired token'})}};
